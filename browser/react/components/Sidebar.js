@@ -3,7 +3,6 @@ import { Link } from 'react-router';
 // import {newPlaylist } from './newPlaylist';
 
 const Sidebar = (props) => {
-    console.log('props: ', props);
   return (
     <sidebar>
       <img src="juke.svg" className="logo" />

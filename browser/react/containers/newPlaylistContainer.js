@@ -21,8 +21,13 @@ export default class NewPlaylistContainer extends Component{
         event?event.preventDefault():null;
         this.props.NewPlaylist({name: this.state.inputValue});
         this.setState({inputValue: ''});
-
     }
+
+    // addSong(event){
+    //     event?event.preventDefault():null;
+    //     this.props.NewPlaylist({name: this.state.inputValue});
+    //     this.setState({inputValue: ''});
+    // }
 
 
     render(){

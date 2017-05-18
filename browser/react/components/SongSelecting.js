@@ -12,9 +12,11 @@ export default class SongSelecting extends React.Component{
 
     handleChange(event){
         this.setState({inputValue: event.target.value});
+        console.log(this.state.inputValue);
     }
 
     render(){
+
         return(
             <div className="well">
                 <form className="form-horizontal" noValidate name="songSelect">
@@ -25,10 +27,14 @@ export default class SongSelecting extends React.Component{
                             <div className="col-xs-10">
                                 <select className="form-control" name="song" onChange={this.handleChange}>
 
+                                    {
+                                        this.props.allSongs && this.props.allSongs.map(song => {
+                                            return (
+                                                <option key={song.id} value={song.name}>{song.name}</option>
+                                            )
+                                        })
+                                    }
 
-
-                                    <option value='hi'>song name</option>
-                                    <option value='hello'>another song name</option>
                                 </select>
                             </div>
                         </div>

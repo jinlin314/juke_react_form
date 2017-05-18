@@ -34,7 +34,7 @@ export default class Playlist extends React.Component{
                 <Songs songs={this.props.selectedPlaylist.songs} /> {/** Hooray for reusability! */}
                 { this.props.selectedPlaylist.songs && !this.props.selectedPlaylist.songs.length && <small>No songs.</small> }
                 <hr />
-                <SongSelecting  />
+                <SongSelecting  allSongs={this.props.allSongs} />
             </div>
 
         )
