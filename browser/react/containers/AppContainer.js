@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-
+import { hashHistory } from 'react-router'
 import initialState from '../initialState';
 import AUDIO from '../audio';
 
@@ -8,6 +8,7 @@ import Albums from '../components/Albums.js';
 import Album from '../components/Album';
 import Sidebar from '../components/Sidebar';
 import Player from '../components/Player';
+import FilterableArtistsContainer from '../components/FilterableArtistsContainer';
 
 import { convertAlbum, convertAlbums, convertSong, skip } from '../utils';
 
@@ -23,6 +24,8 @@ export default class AppContainer extends Component {
     this.prev = this.prev.bind(this);
     this.selectAlbum = this.selectAlbum.bind(this);
     this.selectArtist = this.selectArtist.bind(this);
+    this.NewPlaylist = this.NewPlaylist.bind(this);
+    this.selectPlaylist = this.selectPlaylist.bind(this);
   }
 
   componentDidMount () {
@@ -30,7 +33,8 @@ export default class AppContainer extends Component {
     Promise
       .all([
         axios.get('/api/albums/'),
-        axios.get('/api/artists/')
+        axios.get('/api/artists/'),
+          axios.get('api/playlists/')
       ])
       .then(res => res.map(r => r.data))
       .then(data => this.onLoad(...data));
@@ -41,10 +45,11 @@ export default class AppContainer extends Component {
       this.setProgress(AUDIO.currentTime / AUDIO.duration));
   }
 
-  onLoad (albums, artists) {
+  onLoad (albums, artists,playlists) {
     this.setState({
       albums: convertAlbums(albums),
-      artists: artists
+      artists: artists,
+       playlists: playlists
     });
   }
 
@@ -104,6 +109,16 @@ export default class AppContainer extends Component {
       }));
   }
 
+    selectPlaylist (playlistId) {
+        axios.get(`/api/playlists/${playlistId}`)
+            .then(res =>
+            { console.log('res.data', res.data);
+              return res.data})
+            .then(playlist => this.setState({
+                selectedPlaylist: playlist
+            }));
+    }
+
   selectArtist (artistId) {
     Promise
       .all([
@@ -124,19 +139,34 @@ export default class AppContainer extends Component {
     this.setState({ selectedArtist: artist });
   }
 
+    NewPlaylist(playlistObj){
+      axios.post('/api/playlists', playlistObj)
+            .then(res => res.data)
+            .then(result => {
+                console.log(result) // response json from the server!
+                let lists = this.state.playlists;
+                lists.push(result);
+                this.setState({playlists: lists});
+                const path = '/playlists/' + result.id;
+                hashHistory.push(path);
+            });
+    }
+
   render () {
 
     const props = Object.assign({}, this.state, {
       toggleOne: this.toggleOne,
       toggle: this.toggle,
       selectAlbum: this.selectAlbum,
-      selectArtist: this.selectArtist
+      selectArtist: this.selectArtist,
+        NewPlaylist: this.NewPlaylist,
+        selectPlaylist: this.selectPlaylist
     });
 
     return (
       <div id="main" className="container-fluid">
         <div className="col-xs-2">
-          <Sidebar />
+          <Sidebar playlists={this.state.playlists}/>
         </div>
         <div className="col-xs-10">
         {
